@@ -2,9 +2,11 @@
 
 Fetch FX is a package aiming to provide an easy and lightweight wrapper around the native [`fetch API`](https://developer.mozilla.org/fr/docs/Web/API/WindowOrWorkerGlobalScope/fetch), but with the ClojureScript niceties added.
 
-# Getting Started
+I’m not sure wether I should upload it to Clojars ([and join all](https://clojars.org/fetch-fx) [of the](https://clojars.org/day8.re-frame/fetch-fx) [`#".*fetch-fx.*"` projects](https://clojars.org/superstructor/re-frame-fetch-fx))… For now, if the project is interesting for you, grab it directly, it remains in two files, and let me a sweet comment to indicate that you’re interested in the project. I really don’t see the point to push another project with little or no added value and which only will pollute the global Clojars.
 
-Add `[fetch-fx "0.1.0"]` in your `:dependencies` array in your `shadow-cljs.edn`. Everything should install automatically. You can then use the package directly with ClojureScript or with re-frame. Let’s start with re-frame.
+I’ll try to push the package further, so you can probably expect updates in a near future (as the time of writing those lines, the 25th February 2020).
+
+# Getting Started
 
 In your event handler, probably something like `events.cljs`, require `[fetch-fx.re-frame]`. Now, you can use them in `reg-event-fx`. It will be better with an example with a login.
 
