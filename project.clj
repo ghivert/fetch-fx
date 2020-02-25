@@ -9,4 +9,7 @@
             :url "https://github/ghivert/fetch-fx/blob/master/LICENSE"}
   :dependencies [[org.clojure/clojurescript "1.10.520" :scope "provided"]
                  [re-frame "0.11.0" :scope "provided"]]
-  :source-paths ["src"])
+  :source-paths ["src"]
+  :deploy-repositories
+  [["releases" {:sign-releases false
+                :url "https://clojars.org/repo"}]])
