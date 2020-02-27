@@ -20,6 +20,9 @@ In your event handler, probably something like `events.cljs`, require `[fetch-fx
     {:fetch ; The fetch-fx is just :fetch in your fx map.
       {:method :post
        :json true ; :json can be used in order to convert the response from JSON into CLJ map.
+       :array-buffer true
+       :blob true
+       :form-data true
        :body ; The body will automatically be converted into JSON.
          {:email email
           :password password}
@@ -65,4 +68,18 @@ You can also use directly `fetch-fx` without re-frame. The function allowing thi
   (-> (fetch-data!)
       (.then (fn [[result]]
                (:username result)))))
+```
+
+
+## Response
+
+```clojure
+(def response
+  {:ok "boolean"
+  :redirected "boolean"
+  :headers {:key "value"}
+  :status 200
+  :status-text "ok"
+  :type "ok"
+  :url "ok"})
 ```
