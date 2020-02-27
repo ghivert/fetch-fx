@@ -3,7 +3,8 @@
    Everything is focused around simplicity and try to reproduce the options of
    `fetch` to avoid cognitive overload, but of course by adding this little
    ClojureScript touch."
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [re-frame.core :as rf]))
 
 (defn body->str [body]
   (->> body clj->js (.stringify js/JSON)))
@@ -22,7 +23,8 @@
 (defn request->js [request]
   (let [body (body->str (:body request))]
     (-> request
-        (dissoc :uri :params :body :json)
+        (dissoc :uri :params :body)
+        (dissoc :json :array-buffer :blob :form-data)
         (generate-js-request (:method request) body)
         clj->js)))
 
@@ -37,14 +39,39 @@
         (js->clj :keywordize-keys true))
     text))
 
-(defn dispatch-response [message json?]
+(defn convert-headers [response]
+  (->> (.-headers response)
+       (.entries)
+       (es6-iterator-seq)
+       (reduce (fn [acc [key value]] (assoc acc (keyword key) value)) {})))
+
+(defn convert-response [response]
+  {:ok (.-ok response)
+   :redirected (.-redirected response)
+   :headers (convert-headers response)
+   :status (.-status response)
+   :status-text (.-statusText response)
+   :type (.-type response)
+   :url (.-url response)})
+
+(defn dispatch-response [message body-extractor]
   (fn [response]
-    (-> (.text response)
-        (.then
-         (fn [text]
-           (let [value (text->json json? text)]
-             (when message (rf/dispatch [message value response]))
-             [value response]))))))
+    (if (instance? js/TypeError response)
+      (rf/dispatch [message (.-message response) response])
+      (-> (body-extractor response)
+          (.then #(js->clj % :keywordize-keys true))
+          (.then
+           (fn [value]
+             (when message (rf/dispatch [message value (convert-response response) response]))
+             [value (convert-response response) response]))))))
+
+(defn select-body-extractor [{:keys [json array-buffer blob form-data]}]
+  (cond
+    json #(.json %)
+    array-buffer #(.arrayBuffer %)
+    blob #(.blob %)
+    form-data #(.formData %)
+    :else #(.text %)))
 
 (defn fetch!
   "The options are the same as `fetch`, with some more options.
@@ -53,9 +80,8 @@
    re-frame."
   [request]
   (let [{:keys [uri on-success on-failure params]} request
-        json? (:json request)
         options (request->js request)
         url (uri->url uri (params->str params))]
     (-> (js/fetch url options)
-        (.then (dispatch-response on-success json?))
-        (.catch (dispatch-response on-failure json?)))))
+        (.then (dispatch-response on-success (select-body-extractor request)))
+        (.catch (dispatch-response on-failure (select-body-extractor request))))))
