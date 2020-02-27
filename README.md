@@ -52,7 +52,7 @@ You can also use directly `fetch-fx` without re-frame. The function allowing thi
 
 ```clojure
 (ns your-cool-project
-  (:require [fetch-fx :refer [fetch!]]))
+  (:require [fetch-fx.core :refer [fetch!]]))
 
 (defn fetch-data!
   "This function will return a native JS Promise but the result will still be converted."

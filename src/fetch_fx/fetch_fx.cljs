@@ -1,4 +1,4 @@
-(ns fetch-fx
+(ns fetch-fx.core
   "fetch-fx provides an easy way to use `fetch` with a lightweight wrapper.
    Everything is focused around simplicity and try to reproduce the options of
    `fetch` to avoid cognitive overload, but of course by adding this little
